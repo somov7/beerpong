@@ -1,22 +1,20 @@
 from datetime import datetime
-from bson import objectid
-import json
 
 START_RANK = 1000
 
+
 class Player:
-    def __init__(self, _id = None, name = '', rank = START_RANK):
+    def __init__(self, _id=None, name='', rank=START_RANK):
         if _id is not None: self._id = _id
         self.name = name
         self.rank = rank
 
-    def from_dict(dict):
+    @staticmethod
+    def from_dict(d: dict):
         return Player(
-            dict['_id'], 
-            dict['name'], 
-            dict['rank']
+            **d
         )
-    
+
     def __str__(self):
         return str(self.__dict__)
 
@@ -25,10 +23,7 @@ class Player:
 
 
 class Match:
-    def __init__(self):
-        pass
-    
-    def __init__(self, _id = None, team1 = [], team2 = [], score1 = 0, score2 = 0, time = None):
+    def __init__(self, _id=None, team1=[], team2=[], score1=0, score2=0, time=None):
         if _id is not None: self._id = _id
         self.team1 = team1
         self.team2 = team2
@@ -36,14 +31,10 @@ class Match:
         self.score2 = score2
         self.time = datetime.utcnow() if time is None else time
 
-    def from_dict(dict):
+    @staticmethod
+    def from_dict(d: dict):
         return Match(
-            dict['_id'],
-            dict['team1'],
-            dict['team2'],
-            dict['score1'],
-            dict['score2'],
-            dict['time']
+            **d
         )
 
     def __str__(self):

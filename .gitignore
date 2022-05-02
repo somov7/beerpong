@@ -1,1 +1,4 @@
-main.py
+setup_bd.py
+.idea/
+__pycache__/
+.env
