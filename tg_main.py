@@ -27,7 +27,7 @@ def parse_name(message: Message):
     if len(args) == 0:
         player_handle = get_player_handle(message)
     elif len(args) == 1:
-        player_handle = get_player_handle(message)
+        player_handle = args[0]
     else:
         raise Exception('You should provide either 0 or 1 argument')
     player = s.find_player(player_handle)
@@ -93,7 +93,7 @@ def matches(message: Message):
     except Exception as e:
         bot.reply_to(message, e)
     response_message = []
-    for match in service.find_matches_by_player_name(player_handle):
+    for match in s.find_matches_by_player_name(player_handle):
         if player_handle in match.team1:
             response_message.append(f'{match.team1} {match.score1} - {match.score2} {match.team2}, {match.time.strftime("%d %b %Y %H:%M")} ({match.delta:+d})')
         else:
@@ -114,7 +114,7 @@ def stats(message: Message):
     bot.reply_to(message, f'Player\' {stats.name} current rank is {stats.rank}. He has played a total of {stats.total} matches\n' \
         f'{stats.wins} of them were wins, {stats.draws} of them where draws and {stats.loses} of them were loses ({stats.wins * 100 / stats.total:.2f}% winrate)\n'
         f'There were total of {stats.scored + stats.conceded} cup hits in those games, {stats.scored} by {stats.name} and his teammates and {stats.conceded} by his opponents.\n'
-        f'If you drunk three sips of beer after each conceded throw, you would drink approximately consume {stats.conceded * SIP_VOLUME:.1f} liters of beer!'
+        f'If you drunk three sips of beer after each conceded throw, you woulde\'ve approximately consumed {stats.conceded * SIP_VOLUME:.1f} liters of beer!'
     )
 
 if __name__ == '__main__':
