@@ -9,7 +9,8 @@ class BeerPongService:
         self.dao = BeerPongDao()
 
     def add_player(self, name):
-        self.dao.add_player(player=Player(name=name))
+        player=Player(name=name)
+        return self.dao.add_player(player=player)
 
     def add_match(self, team1: list, team2: list, score1, score2):
         players1 = self.dao.find_players_by_names(team1)

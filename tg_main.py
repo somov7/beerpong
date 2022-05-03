@@ -41,10 +41,9 @@ def send_welcome(message: Message) -> None:
     player_handle = get_player_handle(message)
     if not player_handle:
         bot.reply_to(message, "I couldn't get your username, please do something about it")
-    new_player_handle = Player(name=player_handle)
-    new_player_handle = s.add_player(new_player_handle)
-    if new_player_handle:
-        bot.reply_to(message, f"Hi, {new_player_handle}! You are now a part of beerpong community! Your starting ELO is"
+    new_player = s.add_player(player_handle)
+    if new_player:
+        bot.reply_to(message, f"Hi, {new_player.name}! You are now a part of beerpong community! Your starting ELO is"
                               f" {START_RANK} feel free to record your beerpong matches with our bot!")
     else:
         player = s.find_player(player_handle)
