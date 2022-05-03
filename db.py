@@ -33,10 +33,10 @@ class BeerPongDao:
         self.matches.drop()
 
     def find_player_by_name(self, name: str):
-        return self.players.find_one({'name': name})
+        return Player.from_dict(self.players.find_one({'name': name.lower()}))
 
     def find_players_by_names(self, names):
-        return [Player.from_dict(x) for x in self.players.find({'name': {'$in': names}})]
+        return [Player.from_dict(x) for x in self.players.find({'name': {'$in': [x.lower() for x in names]}})]
 
     def get_matches(self):
         return [Match.from_dict(x) for x in self.matches.find()]
@@ -49,4 +49,4 @@ class BeerPongDao:
         self.players.insert_many([x.__dict__ for x in players])
 
     def find_matches_by_player_name(self, name):
-        return [Match.from_dict(x) for x in self.matches.find({'$or': [{'team1': name}, {'team2': name}]})]
+        return [Match.from_dict(x) for x in self.matches.find({'$or': [{'team1': name.lower()}, {'team2': name.lower()}]})]

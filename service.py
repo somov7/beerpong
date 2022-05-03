@@ -1,7 +1,7 @@
 from db import BeerPongDao
 from statistics import mean
 from elo import calculate_rank_change
-from data import Player, Match
+from data import Player, Match, Stats
 
 
 class BeerPongService:
@@ -47,3 +47,26 @@ class BeerPongService:
     def clear(self):
         self.dao.matches.drop()
         self.dao.players.drop()
+
+    def get_stats(self, name):
+        player = self.dao.find_player_by_name(name)
+        matches = self.dao.find_matches_by_player_name(name)
+        wins = 0 
+        loses = 0
+        draws = 0
+        scored = 0
+        conceded = 0
+        for match in matches:
+            if name in match.team1:
+                scored += match.score1
+                conceded += match.score2
+                wins += match.score1 > match.score2
+                draws += match.score1 == match.score2
+                loses += match.score1 < match.score2
+            else:
+                scored += match.score2
+                conceded += match.score1
+                wins += match.score1 < match.score2
+                draws += match.score1 == match.score2
+                loses += match.score1 > match.score2
+        return Stats(player.name, player.rank, wins, draws, loses, scored, conceded)

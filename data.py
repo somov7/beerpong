@@ -1,6 +1,7 @@
 from datetime import datetime
 
 START_RANK = 1000
+SIP_VOLUME = 0.021 # liters
 
 
 class Player:
@@ -37,6 +38,23 @@ class Match:
         return Match(
             **d
         )
+
+    def __str__(self):
+        return str(self.__dict__)
+
+    def __repr__(self):
+        return repr(self.__dict__)
+
+class Stats:
+    def __init__(self, name, rank, wins, loses, draws, scored, conceded):
+        self.name = name
+        self.rank = rank
+        self.wins = wins
+        self.loses = loses
+        self.draws = draws
+        self.scored = scored
+        self.conceded = conceded
+        self.total = wins + draws + loses
 
     def __str__(self):
         return str(self.__dict__)
