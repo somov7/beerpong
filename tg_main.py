@@ -47,7 +47,7 @@ def send_welcome(message: Message) -> None:
                               f" {START_RANK} feel free to record your beerpong matches with our bot!")
     else:
         player = s.find_player(player_handle)
-        bot.reply_to(message, f"Hi, {player_handle}! Your current elo is {player['rank']}. Go play some beerpong!")
+        bot.reply_to(message, f"Hi, {player_handle}! Your current elo is {player.rank}. Go play some beerpong!")
 
 
 @bot.message_handler(commands=['save_solo_match'])
