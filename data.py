@@ -46,7 +46,7 @@ class Match:
         return repr(self.__dict__)
 
 class Stats:
-    def __init__(self, name, rank, wins, loses, draws, scored, conceded):
+    def __init__(self, name, rank, wins, draws, loses, scored, conceded):
         self.name = name
         self.rank = rank
         self.wins = wins
