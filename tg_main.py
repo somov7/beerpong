@@ -1,4 +1,5 @@
 import os
+from time import strftime
 
 import telebot
 from dotenv import load_dotenv
@@ -12,7 +13,6 @@ load_dotenv()
 TG_API_KEY = os.getenv('TG_API_KEY')
 
 bot = telebot.TeleBot(TG_API_KEY)
-db = BeerPongDao()
 s = service.BeerPongService()
 
 
@@ -30,13 +30,13 @@ def send_welcome(message: Message) -> None:
     if not player_handle:
         bot.reply_to(message, "I couldn't get your username, please do something about it")
     new_player_handle = Player(name=player_handle)
-    new_player_handle = db.add_player(new_player_handle)
+    new_player_handle = s.add_player(new_player_handle)
     if new_player_handle:
         bot.reply_to(message, f"Hi, {new_player_handle}! You are now a part of beerpong community! Your starting ELO is"
                               f" {START_RANK} feel free to record your beerpong matches with our bot!")
     else:
-        elo = db.elo_by_name(player_handle)
-        bot.reply_to(message, f"Hi, {player_handle}! Your current elo is {elo['rank']}. Go play some beerpong!")
+        player = s.find_player(player_handle)
+        bot.reply_to(message, f"Hi, {player_handle}! Your current elo is {player['rank']}. Go play some beerpong!")
 
 
 @bot.message_handler(commands=['save_solo_match'])
@@ -45,7 +45,6 @@ def save_solo_match(message: Message) -> None:
                 f"/save_match OPPONENT_NAME CUPS_YOU_SCORED CUPS_HE_SCORED\n" \
                 f"like this:\n" \
                 f"/save_solo_match ABOBA 10 5"
-    player1_handle = get_player_handle(message)
     text = message.text
     args = text.split(' ')[1:]
     if len(args) != 3:
@@ -57,6 +56,8 @@ def save_solo_match(message: Message) -> None:
     except ValueError:
         bot.reply_to(message, ERROR_MSG)
         return
+        
+    player1_handle = get_player_handle(message)
     player2_handle = args[0]
     player1_score = args[1]
     player2_score = args[2]
@@ -65,8 +66,23 @@ def save_solo_match(message: Message) -> None:
     except Exception as e:
         bot.reply_to(message, f'could not add match because {e}')
         return
-    bot.reply_to(message, f"Nice game! Your new elo is {db.elo_by_name(player1_handle)['rank']}! {player2_handle}'s elo is now {db.elo_by_name(player2_handle)['rank']}")
+    bot.reply_to(message, f"Nice game! Your new elo is {s.find_player(player1_handle)['rank']}! {player2_handle}'s elo is now {s.find_player(player2_handle)['rank']}")
 
+@bot.message_handler(commands=['leaderboards'])
+def leaderboards(message: Message):
+    response_message = [f'#{i}. {x.name} - {x.rank}' for i, x in enumerate(s.get_players(), start = 1)]
+    bot.reply_to(message, '\n'.join(response_message))
+
+@bot.message_handler(commands=['my_matches'])
+def my_matches(message: Message):
+    player_handle = get_player_handle(message)
+    response_message = []
+    for match in service.find_matches_by_player_name(player_handle):
+        if player_handle in match.team1:
+            response_message.append(f'{match.team1} {match.score1} - {match.score2} {match.team2}, {match.time.strftime("%d %b %Y %H:%M")} ({match.delta:+d})')
+        else:
+            response_message.append(f'{match.team2} {match.score2} - {match.score1} {match.team1}, {match.time.strftime("%d %b %Y %H:%M")} ({-match.delta:+d})')
+    bot.reply_to(message, '\n'.join(response_message))
 
 if __name__ == '__main__':
     bot.infinity_polling()

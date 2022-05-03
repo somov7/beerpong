@@ -32,6 +32,9 @@ class BeerPongDao:
     def delete_matches(self):
         self.matches.drop()
 
+    def find_player_by_name(self, name: str):
+        return self.players.find_one({'name': name})
+
     def find_players_by_names(self, names):
         return [Player.from_dict(x) for x in self.players.find({'name': {'$in': names}})]
 
@@ -46,7 +49,4 @@ class BeerPongDao:
         self.players.insert_many([x.__dict__ for x in players])
 
     def find_matches_by_player_name(self, name):
-        return [Match.from_dict() for x in self.matches.find({'$or': [{'team1': name}, {'team2': name}]})]
-
-    def elo_by_name(self, name: str):
-        return self.players.find_one({'name': name})
+        return [Match.from_dict(x) for x in self.matches.find({'$or': [{'team1': name}, {'team2': name}]})]

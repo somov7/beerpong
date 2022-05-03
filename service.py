@@ -12,8 +12,6 @@ class BeerPongService:
         self.dao.add_player(player=Player(name=name))
 
     def add_match(self, team1: list, team2: list, score1, score2):
-        self.dao.add_match(Match(team1=team1, team2=team2, score1=score1, score2=score2))
-
         players1 = self.dao.find_players_by_names(team1)
         players2 = self.dao.find_players_by_names(team2)
         player_names = [x.name for x in [*players1, *players2]]
@@ -25,6 +23,9 @@ class BeerPongService:
         rank1 = mean([x.rank for x in players1])
         rank2 = mean([x.rank for x in players2])
         delta = calculate_rank_change(rank1, rank2, score1, score2)
+
+        self.dao.add_match(Match(team1=team1, team2=team2, score1=score1, score2=score2, delta=delta))
+
         for player in players1:
             player.rank += delta
         for player in players2:
@@ -35,10 +36,13 @@ class BeerPongService:
         return sorted(self.dao.get_players(), key=lambda x: x.rank, reverse=True)
 
     def get_matches(self):
-        return sorted(self.dao.get_matches(), key=lambda x: x.time, reverse=True)
+        return sorted(self.dao.get_matches(), key=lambda x: x.time)
 
     def find_matches_by_player_name(self, name):
         return sorted(self.dao.find_matches_by_player_name(name), key=lambda x: x.time, reverse=True)
+
+    def find_player(self, name):
+        return self.dao.find_player_by_name(name)
 
     def clear(self):
         self.dao.matches.drop()

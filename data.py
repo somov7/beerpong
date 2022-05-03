@@ -23,13 +23,14 @@ class Player:
 
 
 class Match:
-    def __init__(self, _id=None, team1=[], team2=[], score1=0, score2=0, time=None):
+    def __init__(self, _id=None, team1=[], team2=[], score1=0, score2=0, time=None, delta=0):
         if _id is not None: self._id = _id
         self.team1 = [x.lower() for x in team1]
         self.team2 = [x.lower() for x in team2]
         self.score1 = score1
         self.score2 = score2
         self.time = datetime.utcnow() if time is None else time
+        self.delta = delta
 
     @staticmethod
     def from_dict(d: dict):
