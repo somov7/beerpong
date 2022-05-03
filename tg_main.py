@@ -108,6 +108,9 @@ def stats(message: Message):
     except Exception as e:
         bot.reply_to(message, e)
     stats = s.get_stats(player_handle)
+    if stats.total == 0:
+        bot.reply_to(message, f'Player {stats.name} has not played any matches yet. Go play some beerpong!')
+        return
     bot.reply_to(message, f'Player\' {stats.name} current rank is {stats.rank}. He has played a total of {stats.total} matches\n' \
         f'{stats.wins} of them were wins, {stats.draws} of them where draws and {stats.loses} of them were loses ({stats.wins * 100 / stats.total:.2f}% winrate)\n'
         f'There were total of {stats.scored + stats.conceded} cup hits in those games, {stats.scored} by {stats.name} and his teammates and {stats.conceded} by his opponents.\n'
