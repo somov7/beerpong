@@ -2,3 +2,4 @@ setup_bd.py
 .idea/
 __pycache__/
 .env
+main.py

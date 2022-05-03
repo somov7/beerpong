@@ -39,3 +39,7 @@ class BeerPongService:
 
     def find_matches_by_player_name(self, name):
         return sorted(self.dao.find_matches_by_player_name(name), key=lambda x: x.time, reverse=True)
+
+    def clear(self):
+        self.dao.matches.drop()
+        self.dao.players.drop()

@@ -36,7 +36,7 @@ class BeerPongDao:
         return [Player.from_dict(x) for x in self.players.find({'name': {'$in': names}})]
 
     def get_matches(self):
-        return [Match.from_dict() for x in self.matches.find()]
+        return [Match.from_dict(x) for x in self.matches.find()]
 
     def add_match(self, match: Match) -> None:
         self.matches.insert_one(match.__dict__)
