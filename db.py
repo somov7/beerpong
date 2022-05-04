@@ -1,4 +1,5 @@
 import os
+from typing import Union
 
 import pymongo
 from data import Player, Match
@@ -18,10 +19,10 @@ class BeerPongDao:
         self.players = self.db['players']
         self.matches = self.db['matches']
 
-    def add_player(self, player):
+    def add_player(self, player) -> Union[Player, None]:
         if self.players.find_one({'name': player.name}): return
         self.players.insert_one(player.__dict__)
-        return player.name
+        return player
 
     def get_players(self):
         return [Player.from_dict(x) for x in self.players.find()]
@@ -49,4 +50,5 @@ class BeerPongDao:
         self.players.insert_many([x.__dict__ for x in players])
 
     def find_matches_by_player_name(self, name):
-        return [Match.from_dict(x) for x in self.matches.find({'$or': [{'team1': name.lower()}, {'team2': name.lower()}]})]
+        return [Match.from_dict(x) for x in
+                self.matches.find({'$or': [{'team1': name.lower()}, {'team2': name.lower()}]})]

@@ -8,7 +8,8 @@ import service
 from data import Player, START_RANK, SIP_VOLUME
 
 load_dotenv()
-TG_API_KEY = os.getenv('TG_API_KEY')
+IS_DEV = os.getenv('TG_API_KEY_DEV')
+TG_API_KEY = os.getenv('TG_API_KEY') if not IS_DEV else os.getenv('TG_API_KEY_DEV')
 
 bot = telebot.TeleBot(TG_API_KEY)
 s = service.BeerPongService()
@@ -20,6 +21,7 @@ def get_player_handle(message: Message):
                f"{message.from_user.first_name} {message.from_user.last_name}"
     except AttributeError:
         return
+
 
 def parse_name(message: Message):
     text = message.text
@@ -67,7 +69,7 @@ def save_solo_match(message: Message) -> None:
     except ValueError:
         bot.reply_to(message, ERROR_MSG)
         return
-        
+
     player1_handle = get_player_handle(message)
     player2_handle = args[0]
     player1_score = args[1]
@@ -77,12 +79,13 @@ def save_solo_match(message: Message) -> None:
     except Exception as e:
         bot.reply_to(message, f'could not add match because {e}')
         return
-    bot.reply_to(message, f"Nice game! Your new elo is {s.find_player(player1_handle)['rank']}! {player2_handle}'s elo is now {s.find_player(player2_handle)['rank']}")
+    bot.reply_to(message,
+                 f"Nice game! Your new elo is {s.find_player(player1_handle)['rank']}! {player2_handle}'s elo is now {s.find_player(player2_handle)['rank']}")
 
 
 @bot.message_handler(commands=['leaderboards'])
 def leaderboards(message: Message):
-    response_message = [f'#{i}. {x.name} - {x.rank}' for i, x in enumerate(s.get_players(), start = 1)]
+    response_message = [f'#{i}. {x.name} - {x.rank}' for i, x in enumerate(s.get_players(), start=1)]
     bot.reply_to(message, '\n'.join(response_message))
 
 
@@ -95,9 +98,11 @@ def matches(message: Message):
     response_message = []
     for match in s.find_matches_by_player_name(player_handle):
         if player_handle in match.team1:
-            response_message.append(f'{match.team1} {match.score1} - {match.score2} {match.team2}, {match.time.strftime("%d %b %Y %H:%M")} ({match.delta:+d})')
+            response_message.append(
+                f'{match.team1} {match.score1} - {match.score2} {match.team2}, {match.time.strftime("%d %b %Y %H:%M")} ({match.delta:+d})')
         else:
-            response_message.append(f'{match.team2} {match.score2} - {match.score1} {match.team1}, {match.time.strftime("%d %b %Y %H:%M")} ({-match.delta:+d})')
+            response_message.append(
+                f'{match.team2} {match.score2} - {match.score1} {match.team1}, {match.time.strftime("%d %b %Y %H:%M")} ({-match.delta:+d})')
     bot.reply_to(message, '\n'.join(response_message))
 
 
@@ -111,11 +116,14 @@ def stats(message: Message):
     if stats.total == 0:
         bot.reply_to(message, f'Player {stats.name} has not played any matches yet. Go play some beerpong!')
         return
-    bot.reply_to(message, f'Player\' {stats.name} current rank is {stats.rank}. He has played a total of {stats.total} matches\n' \
-        f'{stats.wins} of them were wins, {stats.draws} of them where draws and {stats.loses} of them were loses ({stats.wins * 100 / stats.total:.2f}% winrate)\n'
-        f'There were total of {stats.scored + stats.conceded} cup hits in those games, {stats.scored} by {stats.name} and his teammates and {stats.conceded} by his opponents.\n'
-        f'If you drunk three sips of beer after each conceded throw, you woulde\'ve approximately consumed {stats.conceded * SIP_VOLUME:.1f} liters of beer!'
-    )
+    bot.reply_to(message,
+                 f'Player\' {stats.name} current rank is {stats.rank}. He has played a total of {stats.total} matches\n'
+                 f'{stats.wins} of them were wins, {stats.draws} of them where draws and {stats.loses} of them were '
+                 f'loses ({stats.wins * 100 / stats.total:.2f}% winrate)\n '
+                 f'There were total of {stats.scored + stats.conceded} cup hits in those games, {stats.scored} by {stats.name} and his teammates and {stats.conceded} by his opponents.\n '
+                 f'If you drunk three sips of beer after each conceded throw, you woulde\'ve approximately consumed {stats.conceded * SIP_VOLUME:.1f} liters of beer! '
+                 )
+
 
 if __name__ == '__main__':
     bot.infinity_polling()
