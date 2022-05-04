@@ -17,8 +17,8 @@ s = service.BeerPongService()
 
 def get_player_handle(message: Message):
     try:
-        return message.from_user.username or \
-               f"{message.from_user.first_name} {message.from_user.last_name}"
+        return message.from_user.username.lower() or \
+               f"{message.from_user.first_name} {message.from_user.last_name}".lower()
     except AttributeError:
         return
 
@@ -80,7 +80,7 @@ def save_solo_match(message: Message) -> None:
         bot.reply_to(message, f'could not add match because {e}')
         return
     bot.reply_to(message,
-                 f"Nice game! Your new elo is {s.find_player(player1_handle)['rank']}! {player2_handle}'s elo is now {s.find_player(player2_handle)['rank']}")
+                 f"Nice game! Your new elo is {s.find_player(player1_handle).rank}! {player2_handle}'s elo is now {s.find_player(player2_handle).rank}")
 
 
 @bot.message_handler(commands=['leaderboards'])
