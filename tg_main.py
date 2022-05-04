@@ -121,7 +121,7 @@ def stats(message: Message):
                  f'{stats.wins} of them were wins, {stats.draws} of them where draws and {stats.loses} of them were '
                  f'loses ({stats.wins * 100 / stats.total:.2f}% winrate)\n '
                  f'There were total of {stats.scored + stats.conceded} cup hits in those games, {stats.scored} by {stats.name} and his teammates and {stats.conceded} by his opponents.\n '
-                 f'If you drunk three sips of beer after each conceded throw, you woulde\'ve approximately consumed {stats.conceded * SIP_VOLUME:.1f} liters of beer! '
+                 f'If you drunk three sips of beer after each conceded throw, you woulde\'ve approximately consumed {stats.conceded * SIP_VOLUME * 3:.1f} liters of beer! '
                  )
 
 
